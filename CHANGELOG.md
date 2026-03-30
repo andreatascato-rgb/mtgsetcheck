@@ -11,3 +11,7 @@ e questo progetto aderisce a [Semantic Versioning](https://semver.org/lang/it/).
 
 - Documentazione su versionamento (`app/docs/decisions/06-versioning-and-releases.md`) e workflow GitHub (`app/docs/best-practice/08-github-workflow.md`).
 - Policy: ogni commit include la versione corrente nel messaggio; hook Git `.githooks/commit-msg` (attivare con `git config core.hooksPath .githooks`).
+
+### Changed
+
+- README principale per GitHub: badge CI, stack, avvio rapido e link alla documentazione.
