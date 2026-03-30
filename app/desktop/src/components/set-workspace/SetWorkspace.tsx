@@ -680,7 +680,7 @@ export function SetWorkspace({
               aria-hidden
             />
             <div
-              className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-surface-1/60 p-1"
+              className="flex flex-wrap items-center gap-1"
               role="group"
               aria-label="Filtra per colori mana"
             >
