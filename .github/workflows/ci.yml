@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  desktop:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app/desktop
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/desktop/package-lock.json
+
+      - run: npm ci
+      - run: npm run check
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: cargo clippy
+        working-directory: app/desktop/src-tauri
+        run: cargo clippy -- -D warnings

@@ -1,0 +1,26 @@
+# Dependencies & build
+node_modules/
+dist/
+dist-ssr/
+**/src-tauri/target/
+
+# Logs & env
+*.log
+.env
+.env.*
+!.env.example
+
+# OS & editors
+.DS_Store
+Thumbs.db
+.idea/
+*.sw?
+
+# Test / coverage
+coverage/
+
+# Misc
+*.local
+
+# Cursor
+.cursor/

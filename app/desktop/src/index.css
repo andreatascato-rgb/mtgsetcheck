@@ -1,0 +1,212 @@
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, "Palatino Linotype", serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", monospace;
+
+  --color-surface-0: #0a0a0c;
+  --color-surface-1: #111114;
+  --color-surface-2: #18181c;
+  --color-border: rgb(255 255 255 / 0.08);
+  --color-border-strong: rgb(255 255 255 / 0.14);
+  --color-muted: #8b8b97;
+  --color-fg: #ececf1;
+  --color-accent: #c9a227;
+  --color-accent-hover: #d4b03a;
+
+  --color-mana-w: #e8e4d8;
+  --color-mana-u: #3b8ed0;
+  --color-mana-b: #4a4a55;
+  --color-mana-r: #c14d4d;
+  --color-mana-g: #2d8f56;
+
+  /*
+   * Layout shell — scala base 4px, nomi semantici.
+   * Preferire questi token in nuovi schermi invece di valori arbitrari (p-5, p-7…).
+   */
+  --width-sidebar: 16rem; /* ~256px: nomi set lunghi senza spezzare troppo presto */
+  --height-app-header: 3.5rem;
+
+  --spacing-layout-x: 1rem; /* 16px — header, allineamento “bordo app” */
+  --spacing-page: 1.5rem; /* 24px — padding area principale */
+  --spacing-surface: 0.75rem; /* 12px — intestazioni riquadri generici */
+  --spacing-scroll: 0.5rem; /* 8px — inset compatto per liste dense */
+  --spacing-list: 0.125rem; /* 2px — gap tra righe lista compatta */
+  --spacing-cluster: 0.5rem; /* 8px — elementi affini (titolo+meta, chip) */
+  --spacing-stack: 1rem; /* 16px — tra paragrafi / blocchi medi */
+  --spacing-section: 2rem; /* 32px — tra sezioni (es. intro → griglia) */
+  --spacing-set-x: 0.625rem; /* 10px — padding orizz. cella set */
+  --spacing-set-y: 0.5rem; /* 8px — padding vert. cella set */
+  --spacing-dense: 0.125rem; /* 2px — due righe dentro stesso controllo */
+  --spacing-scrollbar: 0.125rem; /* padding thumb track */
+  --spacing-sidebar: 1rem; /* 16px — respiro coerente nella colonna set */
+
+  --max-width-column: 48rem; /* colonna centrata contenuto (≈ max-w-3xl) */
+  --max-width-reading: 36rem; /* larghezza testo lungo leggibile */
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-modal: 220ms;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-border);
+  }
+
+  /*
+   * Desktop shell (Tauri / WebView2): niente scroll sul documento — solo su contenitori
+   * espliciti. Evita doppie scrollbar, “vuoti” che scrollano e altezze flex rotte.
+   * Cfr. discussioni Tauri su flex + overflow nei webview.
+   */
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    @apply bg-surface-0 font-sans text-fg antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  #root {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Scrollbar coerenti con tema scuro (Firefox + WebKit / Edge WebView2) */
+  .app-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.18) rgb(255 255 255 / 0.04);
+  }
+
+  .app-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .app-scroll::-webkit-scrollbar-track {
+    background: rgb(255 255 255 / 0.03);
+    border-radius: 999px;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.14);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .app-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.22);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Pulsanti / input submit: cursore pointer (manina), non freccia. */
+  button:not(:disabled),
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  a[href] {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: rgb(201 162 39 / 0.35);
+    color: var(--color-fg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/*
+ * Ombra carta fisica: neutra (solo nero), doppio strato — contatto + luce diffusa.
+ * Nessuna tinta oro; hover leggermente più profondo sulla griglia.
+ */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-toast-in {
+    animation: toast-in 0.22s var(--ease-out-expo, ease-out);
+  }
+
+  .animate-modal-backdrop {
+    animation: modal-backdrop-in var(--duration-modal) var(--ease-out-expo, ease-out) forwards;
+  }
+
+  .animate-modal-panel {
+    animation: modal-panel-in var(--duration-modal) var(--ease-out-expo, ease-out) forwards;
+  }
+
+  .shadow-card {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.22),
+      0 3px 10px rgb(0 0 0 / 0.09);
+  }
+
+  .shadow-card-hover {
+    box-shadow:
+      0 2px 4px rgb(0 0 0 / 0.18),
+      0 6px 14px rgb(0 0 0 / 0.1);
+  }
+
+  .shadow-card-float {
+    box-shadow:
+      0 2px 5px rgb(0 0 0 / 0.16),
+      0 10px 28px rgb(0 0 0 / 0.1);
+  }
+}

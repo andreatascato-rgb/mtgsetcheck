@@ -1,0 +1,37 @@
+#!/bin/sh
+# Richiede che il messaggio di commit contenga la versione corrente da app/desktop/package.json
+# (allineata a tauri.conf.json e Cargo.toml). Installazione: git config core.hooksPath .githooks
+
+MSG_FILE="$1"
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$ROOT" || exit 0
+
+# Merge/rebase automatici: non applicare il vincolo
+FIRST=$(head -n1 "$MSG_FILE")
+case "$FIRST" in
+  Merge\ *) exit 0 ;;
+  Revert\ *) exit 0 ;;
+esac
+
+PKG="app/desktop/package.json"
+if [ ! -f "$PKG" ]; then
+  echo "commit-msg hook: manca $PKG" >&2
+  exit 1
+fi
+
+# Estrae "version" dalla prima riga che la contiene (portabile sh)
+VERSION=$(grep -m1 '"version"' "$PKG" | sed -e 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+if [ -z "$VERSION" ]; then
+  echo "commit-msg hook: impossibile leggere version da $PKG" >&2
+  exit 1
+fi
+
+if ! grep -q "$VERSION" "$MSG_FILE" && ! grep -q "v$VERSION" "$MSG_FILE"; then
+  echo "" >&2
+  echo "commit-msg: il messaggio deve includere la versione corrente del progetto: $VERSION" >&2
+  echo "Esempio: ${VERSION}: breve descrizione   oppure   [${VERSION}] breve descrizione" >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0

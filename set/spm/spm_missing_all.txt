@@ -1,0 +1,92 @@
+# Marvel's Spider-Man (SPM) - UNICA lista mancanti (varianti, foil ignorato)
+# Regola: una riga = una variante con quel collector number.
+
+# --- Collector 1-199 ---
+[ ] 8 - Friendly Neighborhood
+[ ] 24 - With Great Power...
+[ ] 52 - Black Cat, Cunning Thief
+[ ] 81 - J. Jonah Jameson
+[ ] 93 - Spider-Verse
+[ ] 108 - Miles Morales // Ultimate Spider-Man
+[ ] 126 - Cheering Crowd
+[ ] 127 - Cosmic Spider-Man
+[ ] 135 - Mister Negative
+[ ] 153 - The Spot, Living Portal
+[ ] 180 - Multiversal Passage
+[ ] 182 - Oscorp Industries
+
+# --- Collector 200-286 ---
+[ ] 200 - Miles Morales // Ultimate Spider-Man
+[ ] 201 - Spider-Ham, Peter Porker
+[ ] 202 - Gwen Stacy // Ghost-Spider
+[ ] 203 - Web-Warriors
+[ ] 206 - Multiversal Passage
+[ ] 207 - Spider-Punk
+[ ] 208 - Peter Parker // Amazing Spider-Man
+[ ] 209 - Gwen Stacy // Ghost-Spider
+[ ] 210 - Spider-Punk
+[ ] 211 - Miles Morales // Ultimate Spider-Man
+[ ] 213 - Araña, Heart of the Spider
+[ ] 215 - Silk, Web Weaver
+[ ] 217 - Symbiote Spider-Man
+[ ] 218 - Origin of Spider-Man
+[ ] 219 - The Clone Saga
+[ ] 220 - Norman Osborn // Green Goblin
+[ ] 221 - Behold the Sinister Six!
+[ ] 222 - Black Cat, Cunning Thief
+[ ] 223 - The Death of Gwen Stacy
+[ ] 224 - Eddie Brock // Venom, Lethal Protector
+[ ] 226 - Kraven's Last Hunt
+[ ] 227 - Carnage, Crimson Chaos
+[ ] 228 - Doctor Octopus, Master Planner
+[ ] 229 - Mary Jane Watson
+[ ] 232 - Peter Parker // Amazing Spider-Man
+[ ] 233 - Eddie Brock // Venom, Lethal Protector
+[ ] 234 - Miles Morales // Ultimate Spider-Man
+[ ] 235 - Spectacular Spider-Man
+[ ] 236 - Spectacular Spider-Man
+[ ] 237 - Spectacular Spider-Man
+[ ] 238 - Spectacular Spider-Man
+[ ] 239 - Spectacular Spider-Man
+[ ] 240 - Spectacular Spider-Man
+[ ] 241 - Spectacular Spider-Man
+[ ] 242 - The Soul Stone
+[ ] 243 - The Soul Stone
+[ ] 244 - Anti-Venom, Horrifying Healer
+[ ] 245 - Arachne, Psionic Weaver
+[ ] 246 - Friendly Neighborhood
+[ ] 247 - Rent Is Due
+[ ] 248 - With Great Power...
+[ ] 250 - Hydro-Man, Fluid Felon
+[ ] 251 - Impostor Syndrome
+[ ] 252 - Lady Octopus, Inspired Inventor
+[ ] 254 - Spider-Sense
+[ ] 255 - Agent Venom
+[ ] 256 - Gwenom, Remorseless
+[ ] 257 - Morlun, Devourer of Spiders
+[ ] 258 - Parker Luck
+[ ] 259 - Villainous Wrath
+[ ] 260 - Electro, Assaulting Battery
+[ ] 261 - J. Jonah Jameson
+[ ] 263 - Spider-Verse
+[ ] 264 - Spinneret and Spiderling
+[ ] 265 - Lizard, Connors's Curse
+[ ] 266 - Sandman, Shifting Scoundrel
+[ ] 267 - Strength of Will
+[ ] 268 - Web of Life and Destiny
+[ ] 269 - Biorganic Carapace
+[ ] 270 - Cheering Crowd
+[ ] 271 - Cosmic Spider-Man
+[ ] 272 - Jackal, Genius Geneticist
+[ ] 273 - Kraven the Hunter
+[ ] 274 - Mister Negative
+[ ] 275 - Superior Spider-Man
+[ ] 276 - Ultimate Green Goblin
+[ ] 277 - Doc Ock's Tentacles
+[ ] 279 - Iron Spider, Stark Upgrade
+[ ] 281 - Rocket-Powered Goblin Glider
+[ ] 282 - Oscorp Industries
+[ ] 283 - Urban Retreat
+[ ] 284 - Spider-Sense
+
+# Totale mancanti: 84

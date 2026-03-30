@@ -1,0 +1,290 @@
+# Marvel's Spider-Man (SPM) - Full Variant Checklist (foil ignored)
+# Rule: one line = one distinct SPM print/variant (collector number based)
+# [x] = posseduta (non compare in spm_missing_all.txt); [ ] = ancora mancante
+
+[x] 1 - Anti-Venom, Horrifying Healer
+[x] 2 - Arachne, Psionic Weaver
+[x] 3 - Aunt May
+[x] 4 - City Pigeon
+[x] 5 - Costume Closet
+[x] 6 - Daily Bugle Reporters
+[x] 7 - Flash Thompson, Spider-Fan
+[ ] 8 - Friendly Neighborhood
+[x] 9 - Origin of Spider-Man
+[x] 10 - Peter Parker // Amazing Spider-Man
+[x] 11 - Rent Is Due
+[x] 12 - Selfless Police Captain
+[x] 13 - Silver Sable, Mercenary Leader
+[x] 14 - Spectacular Spider-Man
+[x] 15 - Spectacular Tactics
+[x] 16 - Spider-Man, Web-Slinger
+[x] 17 - Spider-UK
+[x] 18 - Starling, Aerial Ally
+[x] 19 - Sudden Strike
+[x] 20 - Thwip!
+[x] 21 - Web Up
+[x] 22 - Web-Shooters
+[x] 23 - Wild Pack Squad
+[ ] 24 - With Great Power...
+[x] 25 - Amazing Acrobatics
+[x] 26 - Beetle, Legacy Criminal
+[x] 27 - Chameleon, Master of Disguise
+[x] 28 - The Clone Saga
+[x] 29 - Doc Ock, Sinister Scientist
+[x] 30 - Doc Ock's Henchmen
+[x] 31 - Flying Octobot
+[x] 32 - Hide on the Ceiling
+[x] 33 - Hydro-Man, Fluid Felon
+[x] 34 - Impostor Syndrome
+[x] 35 - Lady Octopus, Inspired Inventor
+[x] 36 - Madame Web, Clairvoyant
+[x] 37 - Mysterio, Master of Illusion
+[x] 38 - Mysterio's Phantasm
+[x] 39 - Norman Osborn // Green Goblin
+[x] 40 - Oscorp Research Team
+[x] 41 - Robotics Mastery
+[x] 42 - School Daze
+[x] 43 - Secret Identity
+[x] 44 - Spider-Byte, Web Warden
+[x] 45 - Spider-Man No More
+[x] 46 - Spider-Sense
+[x] 47 - Unstable Experiment
+[x] 48 - Whoosh!
+[x] 49 - Agent Venom
+[x] 50 - Alien Symbiosis
+[x] 51 - Behold the Sinister Six!
+[ ] 52 - Black Cat, Cunning Thief
+[x] 53 - Common Crook
+[x] 54 - The Death of Gwen Stacy
+[x] 55 - Eddie Brock // Venom, Lethal Protector
+[x] 56 - Gwenom, Remorseless
+[x] 57 - Inner Demons Gangsters
+[x] 58 - Merciless Enforcers
+[x] 59 - Morlun, Devourer of Spiders
+[x] 60 - Parker Luck
+[x] 61 - Prison Break
+[x] 62 - Risky Research
+[x] 63 - Sandman's Quicksand
+[x] 64 - Scorpion, Seething Striker
+[x] 65 - Scorpion's Sting
+[x] 66 - The Soul Stone
+[x] 67 - Spider-Man Noir
+[x] 68 - The Spot's Portal
+[x] 69 - Swarm, Being of Bees
+[x] 70 - Tombstone, Career Criminal
+[x] 71 - Venom, Evil Unleashed
+[x] 72 - Venomized Cat
+[x] 73 - Venom's Hunger
+[x] 74 - Villainous Wrath
+[x] 75 - Angry Rabble
+[x] 76 - Electro, Assaulting Battery
+[x] 77 - Electro's Bolt
+[x] 78 - Gwen Stacy // Ghost-Spider
+[x] 79 - Heroes' Hangout
+[x] 80 - Hobgoblin, Mantled Marauder
+[ ] 81 - J. Jonah Jameson
+[x] 82 - Masked Meower
+[x] 83 - Maximum Carnage
+[x] 84 - Molten Man, Inferno Incarnate
+[x] 85 - Raging Goblinoids
+[x] 86 - Romantic Rendezvous
+[x] 87 - Shadow of the Goblin
+[x] 88 - Shock
+[x] 89 - Shocker, Unshakable
+[x] 90 - Spider-Gwen, Free Spirit
+[x] 91 - Spider-Islanders
+[x] 92 - Spider-Punk
+[ ] 93 - Spider-Verse
+[x] 94 - Spinneret and Spiderling
+[x] 95 - Stegron the Dinosaur Man
+[x] 96 - Superior Foes of Spider-Man
+[x] 97 - Taxi Driver
+[x] 98 - Wisecrack
+[x] 99 - Damage Control Crew
+[x] 100 - Ezekiel Sims, Spider-Totem
+[x] 101 - Grow Extra Arms
+[x] 102 - Guy in the Chair
+[x] 103 - Kapow!
+[x] 104 - Kraven's Cats
+[x] 105 - Kraven's Last Hunt
+[x] 106 - Lizard, Connors's Curse
+[x] 107 - Lurking Lizards
+[ ] 108 - Miles Morales // Ultimate Spider-Man
+[x] 109 - Pictures of Spider-Man
+[x] 110 - Professional Wrestler
+[x] 111 - Radioactive Spider
+[x] 112 - Sandman, Shifting Scoundrel
+[x] 113 - Scout the City
+[x] 114 - Spider-Ham, Peter Porker
+[x] 115 - Spider-Man, Brooklyn Visionary
+[x] 116 - Spider-Rex, Daring Dino
+[x] 117 - Spiders-Man, Heroic Horde
+[x] 118 - Strength of Will
+[x] 119 - Supportive Parents
+[x] 120 - Terrific Team-Up
+[x] 121 - Wall Crawl
+[x] 122 - Web of Life and Destiny
+[x] 123 - AraÃ±a, Heart of the Spider
+[x] 124 - Biorganic Carapace
+[x] 125 - Carnage, Crimson Chaos
+[ ] 126 - Cheering Crowd
+[ ] 127 - Cosmic Spider-Man
+[x] 128 - Doctor Octopus, Master Planner
+[x] 129 - Gallant Citizen
+[x] 130 - Green Goblin, Revenant
+[x] 131 - Jackal, Genius Geneticist
+[x] 132 - Kraven, Proud Predator
+[x] 133 - Kraven the Hunter
+[x] 134 - Mary Jane Watson
+[ ] 135 - Mister Negative
+[x] 136 - Mob Lookout
+[x] 137 - Morbius the Living Vampire
+[x] 138 - Prowler, Clawed Thief
+[x] 139 - Pumpkin Bombardment
+[x] 140 - Rhino, Barreling Brute
+[x] 141 - Rhino's Rampage
+[x] 142 - Scarlet Spider, Ben Reilly
+[x] 143 - Scarlet Spider, Kaine
+[x] 144 - Shriek, Treblemaker
+[x] 145 - Silk, Web Weaver
+[x] 146 - Skyward Spider
+[x] 147 - SP//dr, Piloted by Peni
+[x] 148 - Spider Manifestation
+[x] 149 - Spider-Girl, Legacy Hero
+[x] 150 - Spider-Man 2099
+[x] 151 - Spider-Man India
+[x] 152 - Spider-Woman, Stunning Savior
+[ ] 153 - The Spot, Living Portal
+[x] 154 - Sun-Spider, Nimble Webber
+[x] 155 - Superior Spider-Man
+[x] 156 - Symbiote Spider-Man
+[x] 157 - Ultimate Green Goblin
+[x] 158 - Vulture, Scheming Scavenger
+[x] 159 - Web-Warriors
+[x] 160 - Wraith, Vicious Vigilante
+[x] 161 - Bagel and Schmear
+[x] 162 - Doc Ock's Tentacles
+[x] 163 - Eerie Gravestone
+[x] 164 - Hot Dog Cart
+[x] 165 - Interdimensional Web Watch
+[x] 166 - Iron Spider, Stark Upgrade
+[x] 167 - Living Brain, Mechanical Marvel
+[x] 168 - Mechanical Mobster
+[x] 169 - News Helicopter
+[x] 170 - Passenger Ferry
+[x] 171 - Peter Parker's Camera
+[x] 172 - Rocket-Powered Goblin Glider
+[x] 173 - Spider-Bot
+[x] 174 - Spider-Mobile
+[x] 175 - Spider-Slayer, Hatred Honed
+[x] 176 - Spider-Suit
+[x] 177 - Steel Wrecking Ball
+[x] 178 - Subway Train
+[x] 179 - Daily Bugle Building
+[ ] 180 - Multiversal Passage
+[x] 181 - Ominous Asylum
+[ ] 182 - Oscorp Industries
+[x] 183 - Savage Mansion
+[x] 184 - Sinister Hideout
+[x] 185 - Suburban Sanctuary
+[x] 186 - University Campus
+[x] 187 - Urban Retreat
+[x] 188 - Vibrant Cityscape
+[x] 189 - Plains
+[x] 190 - Island
+[x] 191 - Swamp
+[x] 192 - Mountain
+[x] 193 - Forest
+[x] 194 - Plains
+[x] 195 - Island
+[x] 196 - Swamp
+[x] 197 - Mountain
+[x] 198 - Forest
+[x] 199 - SP//dr, Piloted by Peni
+[ ] 200 - Miles Morales // Ultimate Spider-Man
+[ ] 201 - Spider-Ham, Peter Porker
+[ ] 202 - Gwen Stacy // Ghost-Spider
+[ ] 203 - Web-Warriors
+[x] 204 - Spider-Man Noir
+[x] 205 - Spider-Man 2099
+[ ] 206 - Multiversal Passage
+[ ] 207 - Spider-Punk
+[ ] 208 - Peter Parker // Amazing Spider-Man
+[ ] 209 - Gwen Stacy // Ghost-Spider
+[ ] 210 - Spider-Punk
+[ ] 211 - Miles Morales // Ultimate Spider-Man
+[x] 212 - Radioactive Spider
+[ ] 213 - AraÃ±a, Heart of the Spider
+[x] 214 - Scarlet Spider, Ben Reilly
+[ ] 215 - Silk, Web Weaver
+[x] 216 - Spider-Man 2099
+[ ] 217 - Symbiote Spider-Man
+[ ] 218 - Origin of Spider-Man
+[ ] 219 - The Clone Saga
+[ ] 220 - Norman Osborn // Green Goblin
+[ ] 221 - Behold the Sinister Six!
+[ ] 222 - Black Cat, Cunning Thief
+[ ] 223 - The Death of Gwen Stacy
+[ ] 224 - Eddie Brock // Venom, Lethal Protector
+[x] 225 - Maximum Carnage
+[ ] 226 - Kraven's Last Hunt
+[ ] 227 - Carnage, Crimson Chaos
+[ ] 228 - Doctor Octopus, Master Planner
+[ ] 229 - Mary Jane Watson
+[x] 230 - Spider-Woman, Stunning Savior
+[x] 231 - The Spot, Living Portal
+[ ] 232 - Peter Parker // Amazing Spider-Man
+[ ] 233 - Eddie Brock // Venom, Lethal Protector
+[ ] 234 - Miles Morales // Ultimate Spider-Man
+[ ] 235 - Spectacular Spider-Man
+[ ] 236 - Spectacular Spider-Man
+[ ] 237 - Spectacular Spider-Man
+[ ] 238 - Spectacular Spider-Man
+[ ] 239 - Spectacular Spider-Man
+[ ] 240 - Spectacular Spider-Man
+[ ] 241 - Spectacular Spider-Man
+[ ] 242 - The Soul Stone
+[ ] 243 - The Soul Stone
+[ ] 244 - Anti-Venom, Horrifying Healer
+[ ] 245 - Arachne, Psionic Weaver
+[ ] 246 - Friendly Neighborhood
+[ ] 247 - Rent Is Due
+[ ] 248 - With Great Power...
+[x] 249 - Hide on the Ceiling
+[ ] 250 - Hydro-Man, Fluid Felon
+[ ] 251 - Impostor Syndrome
+[ ] 252 - Lady Octopus, Inspired Inventor
+[x] 253 - Mysterio, Master of Illusion
+[ ] 254 - Spider-Sense
+[ ] 255 - Agent Venom
+[ ] 256 - Gwenom, Remorseless
+[ ] 257 - Morlun, Devourer of Spiders
+[ ] 258 - Parker Luck
+[ ] 259 - Villainous Wrath
+[ ] 260 - Electro, Assaulting Battery
+[ ] 261 - J. Jonah Jameson
+[x] 262 - Shadow of the Goblin
+[ ] 263 - Spider-Verse
+[ ] 264 - Spinneret and Spiderling
+[ ] 265 - Lizard, Connors's Curse
+[ ] 266 - Sandman, Shifting Scoundrel
+[ ] 267 - Strength of Will
+[ ] 268 - Web of Life and Destiny
+[ ] 269 - Biorganic Carapace
+[ ] 270 - Cheering Crowd
+[ ] 271 - Cosmic Spider-Man
+[ ] 272 - Jackal, Genius Geneticist
+[ ] 273 - Kraven the Hunter
+[ ] 274 - Mister Negative
+[ ] 275 - Superior Spider-Man
+[ ] 276 - Ultimate Green Goblin
+[ ] 277 - Doc Ock's Tentacles
+[x] 278 - Interdimensional Web Watch
+[ ] 279 - Iron Spider, Stark Upgrade
+[x] 280 - Peter Parker's Camera
+[ ] 281 - Rocket-Powered Goblin Glider
+[ ] 282 - Oscorp Industries
+[ ] 283 - Urban Retreat
+[ ] 284 - Spider-Sense
+[x] 285 - Radioactive Spider
+[x] 286 - Gwenom, Remorseless
