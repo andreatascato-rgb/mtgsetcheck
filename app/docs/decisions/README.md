@@ -24,4 +24,4 @@ Linee guida di settore (non vincolanti): [`../best-practice/`](../best-practice/
 
 ## Stato
 
-- **Fase**: **Tailwind CSS v4** + **Radix** (`ScrollArea`, `Separator`) e **shell dark** (header + sidebar set + area principale) in [`../desktop/`](../desktop/). Prossimo passo tipico: import dati da `set/spm/` o primi componenti griglia carta.
+- **Fase**: app desktop **set workspace** con griglia virtualizzata, vista **tabella** checklist, dialog carta (possesso + foil), persistenza collezione e export/import — vedi [`04-data.md`](./04-data.md), [`03-ui-ux.md`](./03-ui-ux.md), codice in [`../desktop/src/components/set-workspace/`](../desktop/src/components/set-workspace/).

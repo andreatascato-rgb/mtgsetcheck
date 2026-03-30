@@ -4,15 +4,25 @@
  */
 
 import type { ChecklistLine } from "./checklistTypes";
-import { normalizeColorIdentity } from "./colorProgress";
+import { extractWubrgFromManaCost } from "./manaCostPips";
+import { normalizeManaColors } from "./manaColorFilter";
 
 export type ScryfallCard = {
   object: "card";
   id: string;
   name: string;
   collector_number: string;
-  /** Colori mana della carta (W,U,B,R,G). */
+  /** Presenza versione foil (API Scryfall). */
+  foil?: boolean;
+  /**
+   * Colori del costo (regole). Se null, spesso su `card_faces[]`.
+   * @see https://scryfall.com/docs/api/cards
+   */
+  colors?: string[] | null;
+  /** Non usato per filtri costo mana (include testo regole / Commander). */
   color_identity?: string[];
+  /** Costo mana (stringa `{...}`). Usato se `colors` assente. */
+  mana_cost?: string;
   image_uris?: {
     png?: string;
     large?: string;
@@ -22,6 +32,8 @@ export type ScryfallCard = {
   };
   card_faces?: Array<{
     name: string;
+    colors?: string[] | null;
+    mana_cost?: string;
     image_uris?: {
       png?: string;
       large?: string;
@@ -71,16 +83,85 @@ function getFrontImageUris(card: ScryfallCard): ScryfallCard["image_uris"] {
   return card.card_faces?.[0]?.image_uris;
 }
 
-/** URL per griglia (leggero) e per anteprima/modale (nitido). */
+function urisToGridLarge(u: NonNullable<ScryfallCard["image_uris"]>): {
+  grid: string | null;
+  large: string | null;
+} {
+  const grid = u.normal ?? u.small ?? u.large ?? u.png ?? null;
+  const large = u.png ?? u.large ?? u.normal ?? null;
+  return { grid, large };
+}
+
+/** URL per griglia (leggero) e per anteprima/modale (nitido) — solo faccia “davanti”. */
 export function getCardImageUrls(card: ScryfallCard): {
   grid: string | null;
   large: string | null;
 } {
   const u = getFrontImageUris(card);
   if (!u) return { grid: null, large: null };
-  const grid = u.normal ?? u.small ?? u.large ?? u.png ?? null;
-  const large = u.png ?? u.large ?? u.normal ?? null;
-  return { grid, large };
+  return urisToGridLarge(u);
+}
+
+/** Una voce per ogni faccia con immagine (MDFC, ecc.). Ordine Scryfall. */
+export type CardFaceImageUrls = {
+  label: string;
+  grid: string | null;
+  large: string | null;
+};
+
+export function getCardFaceImageUrls(card: ScryfallCard): CardFaceImageUrls[] {
+  const withUris = (card.card_faces ?? []).filter((f) => f.image_uris);
+  if (withUris.length >= 2) {
+    return withUris.map((f) => ({
+      label: (f.name ?? "Faccia").trim(),
+      ...urisToGridLarge(f.image_uris!),
+    }));
+  }
+  if (card.image_uris) {
+    const short =
+      card.name.includes("//") ? card.name.split("//")[0]!.trim() : card.name.trim();
+    return [{ label: short || "Carta", ...urisToGridLarge(card.image_uris) }];
+  }
+  if (withUris.length === 1 && withUris[0].image_uris) {
+    return [
+      {
+        label: (withUris[0].name ?? "Carta").trim(),
+        ...urisToGridLarge(withUris[0].image_uris),
+      },
+    ];
+  }
+  return [];
+}
+
+/**
+ * Colori per filtro: `colors` + facce → pip da `mana_cost` → se ancora vuoto `color_identity`
+ * (terre e casi senza costo colorato; Scryfall documenta spesso identity in quei casi).
+ */
+export function manaColorsFromScryfallCard(c: ScryfallCard): readonly string[] {
+  const merged = new Set<string>();
+  for (const col of c.colors ?? []) merged.add(col);
+  for (const f of c.card_faces ?? []) {
+    for (const col of f.colors ?? []) merged.add(col);
+  }
+  if (merged.size > 0) {
+    return normalizeManaColors([...merged]);
+  }
+  const costs: string[] = [];
+  if (c.mana_cost) costs.push(c.mana_cost);
+  for (const f of c.card_faces ?? []) {
+    if (f.mana_cost) costs.push(f.mana_cost);
+  }
+  const fromPips = new Set<string>();
+  for (const cost of costs) {
+    for (const col of extractWubrgFromManaCost(cost)) fromPips.add(col);
+  }
+  if (fromPips.size > 0) {
+    return normalizeManaColors([...fromPips]);
+  }
+  if (c.color_identity?.length) {
+    return normalizeManaColors(c.color_identity);
+  }
+  return [];
 }
 
 function normName(s: string): string {
@@ -134,7 +215,7 @@ export function checklistLinesFromScryfallCards(
     collectorNumber: c.collector_number.trim(),
     name: c.name,
     ownedByDefault: false,
-    colorIdentity: normalizeColorIdentity(c.color_identity),
+    manaColors: manaColorsFromScryfallCard(c),
   }));
 }
 

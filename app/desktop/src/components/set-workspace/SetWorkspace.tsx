@@ -12,25 +12,80 @@ import {
   FileDown,
   FileJson,
   FileText,
-  Layers,
+  FlipHorizontal,
+  Image as ImageIcon,
   LayoutGrid,
+  Layers,
   List as ListIcon,
   RefreshCw,
   X,
 } from "lucide-react";
 import { CARD_DIMMED_OVERLAY_OPACITY } from "../../constants/cardUi";
+import {
+  MANA_FILTER_ORDER,
+  matchesManaColorFilter,
+  type ManaFilterKey,
+} from "../../data/manaColorFilter";
 import type { ChecklistLine } from "../../data/checklistTypes";
+import type { CardFaceImageUrls } from "../../data/scryfallApi";
 import { useToast } from "../../contexts/ToastContext";
 import { useCollectionState } from "../../hooks/useCollectionState";
 import { useContainerWidth } from "../../hooks/useContainerWidth";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useScryfallSetImages } from "../../hooks/useScryfallSetImages";
+import {
+  CHECKLIST_TABLE_ART_COL_CLASS,
+  CHECKLIST_TABLE_ART_THUMB_WRAP_CLASS,
+  CHECKLIST_TABLE_FOIL_COL_CLASS,
+  CHECKLIST_TABLE_NAME_COL_CLASS,
+  CHECKLIST_TABLE_NUM_COL_CLASS,
+  CHECKLIST_TABLE_OWNED_COL_CLASS,
+  CHECKLIST_TABLE_ROW_EDGE_INSET,
+} from "./checklistLayout";
 import { VirtualizedChecklistGrid } from "./VirtualizedChecklistGrid";
-import { VirtualizedChecklistList } from "./VirtualizedChecklistList";
 
 type FilterMode = "all" | "owned" | "missing";
-type ViewMode = "grid" | "list";
+type ViewMode = "grid" | "table";
+
+const MANA_FILTER_TITLE: Record<ManaFilterKey, string> = {
+  W: "Filtra bianco",
+  U: "Filtra blu",
+  B: "Filtra nero",
+  R: "Filtra rosso",
+  G: "Filtra verde",
+  C: "Filtra incolore",
+};
+
+const MANA_FILTER_TOGGLE_CLASS: Record<
+  ManaFilterKey,
+  { on: string; off: string }
+> = {
+  W: {
+    on: "border-zinc-300/50 bg-zinc-100 text-zinc-900 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.35)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+  U: {
+    on: "border-sky-400/60 bg-sky-500 text-white shadow-[inset_0_1px_0_0_rgb(255_255_255/0.2)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+  B: {
+    on: "border-violet-400/50 bg-violet-600 text-white shadow-[inset_0_1px_0_0_rgb(255_255_255/0.15)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+  R: {
+    on: "border-red-400/50 bg-red-600 text-white shadow-[inset_0_1px_0_0_rgb(255_255_255/0.15)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+  G: {
+    on: "border-emerald-400/50 bg-emerald-600 text-white shadow-[inset_0_1px_0_0_rgb(255_255_255/0.15)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+  C: {
+    on: "border-zinc-500/60 bg-zinc-600 text-zinc-100 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.1)]",
+    off: "border-border/60 bg-surface-2/70 text-muted hover:bg-white/[0.06] hover:text-fg/90",
+  },
+};
 
 export type SetWorkspaceProps = {
   setId: string;
@@ -45,6 +100,48 @@ export type SetWorkspaceProps = {
   onStorageError?: (message: string) => void;
 };
 
+function ChecklistTableArtThumb({
+  imageUrl,
+  owned,
+}: {
+  imageUrl: string | null;
+  owned: boolean;
+}) {
+  const [broken, setBroken] = useState(false);
+  useEffect(() => {
+    setBroken(false);
+  }, [imageUrl]);
+  const showArt = Boolean(imageUrl && !broken);
+  return (
+    <div
+      className="relative aspect-[63/88] w-full overflow-hidden rounded border border-border/60 bg-[linear-gradient(160deg,rgb(22_26_36)_0%,rgb(12_14_22)_100%)]"
+      aria-hidden
+    >
+      {showArt ? (
+        <img
+          src={imageUrl!}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover"
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <div className="absolute inset-0 opacity-[0.06] [background-image:repeating-linear-gradient(-14deg,rgb(255_255_255)_0_1px,transparent_1px_12px)]" />
+      )}
+      {!owned ? (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundColor: `rgb(0 0 0 / ${CARD_DIMMED_OVERLAY_OPACITY})`,
+          }}
+          aria-hidden
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export function SetWorkspace({
   setId,
   label,
@@ -57,17 +154,26 @@ export function SetWorkspace({
   const {
     ownedByNumber,
     setOwned,
+    foilByNumber,
+    setFoil,
     counts,
     exportJson,
     importFromJson,
     exportChecklistText,
     importFromChecklistText,
   } = useCollectionState(setId, lines, { onPersistError: onStorageError });
-  const { loading: scryfallLoading, error: scryfallError, getImages } =
-    useScryfallSetImages(scryfallSetCode, lines);
+  const {
+    loading: scryfallLoading,
+    error: scryfallError,
+    getImages,
+    getFaceImages,
+  } = useScryfallSetImages(scryfallSetCode, lines);
   const [filter, setFilter] = useState<FilterMode>("all");
-  const [query, setQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [query, setQuery] = useState("");
+  const [colorFilter, setColorFilter] = useState<Set<ManaFilterKey>>(
+    () => new Set(),
+  );
   const [hoverPreview, setHoverPreview] = useState<{
     line: ChecklistLine;
     x: number;
@@ -197,6 +303,7 @@ export function SetWorkspace({
       const owned = ownedByNumber[l.collectorNumber] ?? false;
       if (filter === "owned" && !owned) return false;
       if (filter === "missing" && owned) return false;
+      if (!matchesManaColorFilter(l, colorFilter)) return false;
       if (q) {
         const hit =
           l.name.toLowerCase().includes(q) || String(l.collectorNumber).includes(q);
@@ -204,7 +311,15 @@ export function SetWorkspace({
       }
       return true;
     });
-  }, [lines, ownedByNumber, filter, query]);
+  }, [lines, ownedByNumber, filter, query, colorFilter]);
+
+  const colorFilterActive = colorFilter.size > 0;
+  const linesWithoutManaColorCount = useMemo(
+    () => lines.filter((l) => l.manaColors === undefined).length,
+    [lines],
+  );
+  const showManaColorFilterHint =
+    colorFilterActive && linesWithoutManaColorCount > 0;
 
   const updateHover = useCallback((line: ChecklistLine, e: React.PointerEvent) => {
     setHoverPreview({ line, x: e.clientX, y: e.clientY });
@@ -230,9 +345,14 @@ export function SetWorkspace({
 
   const pct =
     counts.total === 0 ? 0 : Math.round((counts.owned / counts.total) * 100);
+  const foilPct =
+    counts.total === 0 ? 0 : Math.round((counts.foil / counts.total) * 100);
 
   const detailOwned = detailLine
     ? (ownedByNumber[detailLine.collectorNumber] ?? false)
+    : false;
+  const detailFoil = detailLine
+    ? (foilByNumber[detailLine.collectorNumber] ?? false)
     : false;
 
   return (
@@ -272,34 +392,62 @@ export function SetWorkspace({
         </div>
 
         <div
-          className="grid gap-3 sm:grid-cols-3"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           role="group"
           aria-label="Riepilogo collezione"
         >
-          <StatCard label="Varianti" value={counts.total} />
-          <StatCard label="Possedute" value={counts.owned} accent />
+          <StatCard label="Carte" value={counts.total} />
           <StatCard label="Mancanti" value={counts.missing} />
+          <StatCard label="Possedute" value={counts.owned} accent />
+          <StatCard label="Foil" value={counts.foil} foil />
         </div>
 
-        <div className="max-w-xl">
-          <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-muted">
-            <span>Completamento</span>
-            <span className="font-mono tabular-nums text-fg/90">
-              {pct}% ({counts.owned}/{counts.total})
-            </span>
-          </div>
-          <div
-            className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
-            role="progressbar"
-            aria-valuenow={pct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Completamento collezione ${pct} percento`}
-          >
+        <div
+          className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:gap-6"
+          role="group"
+          aria-label="Completamento e foil"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-muted">
+              <span>Completamento</span>
+              <span className="font-mono tabular-nums text-fg/90">
+                {pct}% ({counts.owned}/{counts.total})
+              </span>
+            </div>
             <div
-              className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out motion-reduce:transition-none"
-              style={{ width: `${pct}%` }}
-            />
+              className="app-progress-track h-1.5 w-full overflow-hidden rounded-full"
+              role="progressbar"
+              aria-valuenow={pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Completamento collezione ${pct} percento`}
+            >
+              <div
+                className="bg-accent-progress-fill h-full min-w-0 rounded-full transition-[width] duration-300 ease-out motion-reduce:transition-none"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-muted">
+              <span>Foil</span>
+              <span className="font-mono tabular-nums text-fg/90">
+                {foilPct}% ({counts.foil}/{counts.total})
+              </span>
+            </div>
+            <div
+              className="app-progress-track h-1.5 w-full overflow-hidden rounded-full"
+              role="progressbar"
+              aria-valuenow={foilPct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Foil ${foilPct} percento`}
+            >
+              <div
+                className="bg-foil-progress-fill h-full min-w-0 rounded-full transition-[width] duration-300 ease-out motion-reduce:transition-none"
+                style={{ width: `${foilPct}%` }}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -310,6 +458,25 @@ export function SetWorkspace({
       >
         <div className="flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-2">
+            <div
+              className="flex gap-1 rounded-lg border border-border bg-surface-1/60 p-1"
+              role="group"
+              aria-label="Vista checklist"
+            >
+              <FilterBtn
+                pressed={viewMode === "grid"}
+                onClick={() => setViewMode("grid")}
+                label="Griglia"
+                icon={<LayoutGrid className="h-3.5 w-3.5 opacity-90" aria-hidden />}
+              />
+              <FilterBtn
+                pressed={viewMode === "table"}
+                onClick={() => setViewMode("table")}
+                label="Tabella"
+                icon={<ListIcon className="h-3.5 w-3.5 opacity-90" aria-hidden />}
+              />
+            </div>
+
             <div
               className="flex flex-wrap gap-1 rounded-lg border border-border bg-surface-1/60 p-1"
               role="group"
@@ -329,25 +496,6 @@ export function SetWorkspace({
                 pressed={filter === "missing"}
                 onClick={() => setFilter("missing")}
                 label="Mancanti"
-              />
-            </div>
-
-            <div
-              className="flex gap-1 rounded-lg border border-border bg-surface-1/60 p-1"
-              role="group"
-              aria-label="Vista checklist"
-            >
-              <FilterBtn
-                pressed={viewMode === "grid"}
-                onClick={() => setViewMode("grid")}
-                label="Griglia"
-                icon={<LayoutGrid className="h-3.5 w-3.5 opacity-90" aria-hidden />}
-              />
-              <FilterBtn
-                pressed={viewMode === "list"}
-                onClick={() => setViewMode("list")}
-                label="Lista"
-                icon={<ListIcon className="h-3.5 w-3.5 opacity-90" aria-hidden />}
               />
             </div>
 
@@ -372,6 +520,10 @@ export function SetWorkspace({
                 {refreshBusy ? "Aggiornamento…" : "Aggiorna da Scryfall"}
               </button>
             ) : null}
+            <span
+              className="mx-0.5 hidden h-6 w-px shrink-0 bg-border/70 sm:block"
+              aria-hidden
+            />
             <div className="relative" ref={importExportWrapRef}>
               <input
                 ref={importInputRef}
@@ -523,6 +675,42 @@ export function SetWorkspace({
                 </ul>
               ) : null}
             </div>
+            <span
+              className="mx-0.5 hidden h-6 w-px shrink-0 bg-border/70 sm:block"
+              aria-hidden
+            />
+            <div
+              className="flex flex-wrap items-center gap-1 rounded-lg border border-border bg-surface-1/60 p-1"
+              role="group"
+              aria-label="Filtra per colori mana"
+            >
+              {MANA_FILTER_ORDER.map((k) => {
+                const pressed = colorFilter.has(k);
+                const st = MANA_FILTER_TOGGLE_CLASS[k];
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    aria-pressed={pressed}
+                    title={MANA_FILTER_TITLE[k]}
+                    onClick={() => {
+                      setColorFilter((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(k)) next.delete(k);
+                        else next.add(k);
+                        return next;
+                      });
+                    }}
+                    className={[
+                      "flex h-7 min-w-[1.75rem] items-center justify-center rounded-md border px-1.5 font-mono text-[11px] font-bold tabular-nums transition-[background-color,border-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0",
+                      pressed ? st.on : st.off,
+                    ].join(" ")}
+                  >
+                    {k}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <label className="flex min-w-0 flex-1 flex-col gap-1 lg:max-w-sm">
@@ -538,92 +726,229 @@ export function SetWorkspace({
           </label>
         </div>
 
+        {showManaColorFilterHint ? (
+          <p
+            className="text-xs leading-relaxed text-amber-200/90"
+            role="status"
+            aria-live="polite"
+          >
+            {onRefreshChecklistFromScryfall ? (
+              <>
+                Filtro colore attivo:{" "}
+                <span className="font-mono tabular-nums">{linesWithoutManaColorCount}</span>{" "}
+                varianti senza metadati colore (checklist testo o dati non aggiornati). Usa{" "}
+                <span className="font-medium text-fg/90">Aggiorna da Scryfall</span> per
+                allineare.
+              </>
+            ) : (
+              <>
+                Filtro colore attivo:{" "}
+                <span className="font-mono tabular-nums">{linesWithoutManaColorCount}</span>{" "}
+                varianti senza dati colore — questo set non è collegato a Scryfall per il
+                refresh checklist.
+              </>
+            )}
+          </p>
+        ) : null}
+
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface-1/35">
           <div
             ref={checklistScrollRef}
-            className="app-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain p-2 sm:p-3"
+            className="app-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2 pt-0 sm:px-3 sm:pb-3"
           >
-            {viewMode === "grid" ? (
-              <VirtualizedChecklistGrid
-                scrollRef={checklistScrollRef}
-                containerWidth={checklistWidth}
-                items={visibleRows}
-              >
-                {(line) => {
-                  const imgs = getImages(line);
-                  const owned = ownedByNumber[line.collectorNumber] ?? false;
-                  return (
-                    <CardTile
-                      line={line}
-                      imageUrl={imgs.grid}
-                      owned={owned}
-                      onHoverMove={(e) => updateHover(line, e)}
-                      onHoverEnd={clearHover}
-                      onOpen={() => {
-                        clearHover();
-                        setDetailLine(line);
-                      }}
-                    />
-                  );
-                }}
-              </VirtualizedChecklistGrid>
-            ) : (
-              <div className="w-full text-left text-sm">
-                <div className="sticky top-0 z-[1] grid grid-cols-[3.5rem_4.5rem_minmax(0,1fr)_7rem] border-b border-border/80 bg-surface-0/95 px-3 py-2.5 shadow-[inset_0_-1px_0_rgb(255_255_255_/0.08)] backdrop-blur-sm">
-                  <div
-                    className="font-mono text-xs font-semibold uppercase tracking-wide text-muted"
-                    aria-label="Anteprima carta"
-                  />
-                  <div className="font-mono text-xs font-semibold uppercase tracking-wide text-muted">
-                    N°
-                  </div>
-                  <div className="min-w-0 font-mono text-xs font-semibold uppercase tracking-wide text-muted">
-                    Nome
-                  </div>
-                  <div className="text-right font-mono text-xs font-semibold uppercase tracking-wide text-muted">
-                    Stato
-                  </div>
-                </div>
-                <VirtualizedChecklistList scrollRef={checklistScrollRef} items={visibleRows}>
+            <div className="pt-2 sm:pt-3">
+              {viewMode === "grid" ? (
+                <VirtualizedChecklistGrid
+                  scrollRef={checklistScrollRef}
+                  containerWidth={checklistWidth}
+                  items={visibleRows}
+                >
                   {(line) => {
+                    const imgs = getImages(line);
                     const owned = ownedByNumber[line.collectorNumber] ?? false;
-                    const thumbUrl = getImages(line).grid;
                     return (
-                      <div
-                        className="grid h-full min-h-[60px] grid-cols-[3.5rem_4.5rem_minmax(0,1fr)_7rem] items-center px-3 py-2 transition-colors hover:bg-white/[0.03]"
-                        role="row"
-                      >
-                        <div className="align-middle">
-                          <ListRowThumb imageUrl={thumbUrl} owned={owned} />
-                        </div>
-                        <div className="whitespace-nowrap font-mono tabular-nums text-muted">
-                          {line.collectorNumber}
-                        </div>
-                        <div className="min-w-0 text-fg/95">{line.name}</div>
-                        <div className="text-right">
-                          <label className="inline-flex cursor-pointer items-center gap-2">
-                            <span className="sr-only">
-                              Posseduta: {line.name} ({line.collectorNumber})
-                            </span>
-                            <input
-                              type="checkbox"
-                              checked={owned}
-                              onChange={(e) =>
-                                setOwned(line.collectorNumber, e.target.checked)
-                              }
-                              className="h-4 w-4 rounded border border-border-strong bg-surface-2 outline-none ring-0 accent-accent focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0"
-                            />
-                            <span className="hidden font-mono text-xs text-muted sm:inline">
-                              {owned ? "Sì" : "No"}
-                            </span>
-                          </label>
-                        </div>
-                      </div>
+                      <CardTile
+                        line={line}
+                        imageUrl={imgs.grid}
+                        owned={owned}
+                        onHoverMove={(e) => updateHover(line, e)}
+                        onHoverEnd={clearHover}
+                        onOpen={() => {
+                          clearHover();
+                          setDetailLine(line);
+                        }}
+                      />
                     );
                   }}
-                </VirtualizedChecklistList>
-              </div>
-            )}
+                </VirtualizedChecklistGrid>
+              ) : visibleRows.length === 0 ? null : (
+                <div
+                  role="table"
+                  aria-label="Checklist tabellare"
+                  aria-colcount={5}
+                  aria-rowcount={visibleRows.length + 1}
+                  className="w-full min-w-0 text-left text-sm"
+                >
+                  <div
+                    role="rowgroup"
+                    className="sticky top-0 z-10 border-b border-border bg-surface-2/95 shadow-[0_1px_0_0_rgb(0_0_0/0.2)]"
+                  >
+                    <div
+                      role="row"
+                      aria-rowindex={1}
+                      className={[
+                        "flex items-stretch gap-3 py-2.5 sm:py-3",
+                        CHECKLIST_TABLE_ROW_EDGE_INSET,
+                      ].join(" ")}
+                    >
+                      <div
+                        role="columnheader"
+                        className={[
+                          "flex min-h-0 items-center justify-center",
+                          CHECKLIST_TABLE_ART_COL_CLASS,
+                        ].join(" ")}
+                      >
+                        <span className="sr-only">Anteprima carta</span>
+                        <ImageIcon
+                          className="h-[1.125rem] w-[1.125rem] text-muted"
+                          aria-hidden
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <div
+                        role="columnheader"
+                        className={[
+                          "flex min-h-0 items-center justify-center text-xs font-semibold tabular-nums tracking-wide text-muted",
+                          CHECKLIST_TABLE_NUM_COL_CLASS,
+                        ].join(" ")}
+                      >
+                        N°
+                      </div>
+                      <div
+                        role="columnheader"
+                        className={[
+                          "flex min-h-0 items-center justify-start text-left text-xs font-semibold text-muted",
+                          CHECKLIST_TABLE_NAME_COL_CLASS,
+                        ].join(" ")}
+                      >
+                        Nome
+                      </div>
+                      <div
+                        role="columnheader"
+                        className={[
+                          "flex min-h-0 items-center justify-center text-xs font-semibold text-muted",
+                          CHECKLIST_TABLE_FOIL_COL_CLASS,
+                        ].join(" ")}
+                      >
+                        Foil
+                      </div>
+                      <div
+                        role="columnheader"
+                        className={[
+                          "flex min-h-0 items-center justify-center text-xs font-semibold text-muted",
+                          CHECKLIST_TABLE_OWNED_COL_CLASS,
+                        ].join(" ")}
+                      >
+                        Posseduta
+                      </div>
+                    </div>
+                  </div>
+                  <div role="rowgroup">
+                    {visibleRows.map((line, rowIndex) => {
+                      const owned = ownedByNumber[line.collectorNumber] ?? false;
+                      const thumbUrl = getImages(line).grid;
+                      const foilLabel = foilByNumber[line.collectorNumber]
+                        ? "Sì"
+                        : "No";
+                      const dataRowIndex = rowIndex + 2;
+                      return (
+                        <div
+                          key={`${line.collectorNumber}::${line.name}`}
+                          role="row"
+                          aria-rowindex={dataRowIndex}
+                          className={[
+                            "flex items-stretch gap-3 border-b border-border/80 py-2.5 sm:py-3",
+                            CHECKLIST_TABLE_ROW_EDGE_INSET,
+                            "cursor-pointer hover:bg-surface-2/55",
+                          ].join(" ")}
+                          onClick={(e) => {
+                            const t = e.target as HTMLElement;
+                            if (t.closest("input, label, button, a")) return;
+                            clearHover();
+                            setDetailLine(line);
+                          }}
+                        >
+                          <div
+                            role="cell"
+                            className={[
+                              "flex min-h-0 items-center justify-center",
+                              CHECKLIST_TABLE_ART_COL_CLASS,
+                            ].join(" ")}
+                          >
+                            <div className={CHECKLIST_TABLE_ART_THUMB_WRAP_CLASS}>
+                              <ChecklistTableArtThumb imageUrl={thumbUrl} owned={owned} />
+                            </div>
+                          </div>
+                          <div
+                            role="cell"
+                            className={[
+                              "flex min-h-0 items-center justify-center text-xs font-medium tabular-nums text-fg/85",
+                              CHECKLIST_TABLE_NUM_COL_CLASS,
+                            ].join(" ")}
+                          >
+                            {line.collectorNumber}
+                          </div>
+                          <div
+                            role="cell"
+                            className={[
+                              "flex min-h-0 min-w-0 items-center justify-start text-left text-sm leading-snug text-fg/90",
+                              CHECKLIST_TABLE_NAME_COL_CLASS,
+                            ].join(" ")}
+                          >
+                            <span className="block min-w-0 truncate" title={line.name}>
+                              {line.name}
+                            </span>
+                          </div>
+                          <div
+                            role="cell"
+                            className={[
+                              "flex min-h-0 items-center justify-center text-xs tabular-nums text-fg/85",
+                              CHECKLIST_TABLE_FOIL_COL_CLASS,
+                            ].join(" ")}
+                          >
+                            {foilLabel}
+                          </div>
+                          <div
+                            role="cell"
+                            className={[
+                              "flex min-h-0 items-center justify-center",
+                              CHECKLIST_TABLE_OWNED_COL_CLASS,
+                            ].join(" ")}
+                          >
+                            <label
+                              className="inline-flex cursor-pointer items-center justify-center rounded-md p-1 hover:bg-white/[0.06]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <span className="sr-only">
+                                Posseduta: {line.name} ({line.collectorNumber})
+                              </span>
+                              <input
+                                type="checkbox"
+                                checked={owned}
+                                onChange={(e) =>
+                                  setOwned(line.collectorNumber, e.target.checked)
+                                }
+                                className="h-4 w-4 rounded border border-border-strong bg-surface-2 outline-none ring-0 accent-accent focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1"
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           {visibleRows.length === 0 ? (
             <p className="border-t border-border px-4 py-6 text-center text-sm text-muted">
@@ -649,57 +974,17 @@ export function SetWorkspace({
         <CardDetailModal
           line={detailLine}
           imageUrl={getImages(detailLine).large}
+          faceImages={getFaceImages(detailLine)}
           owned={detailOwned}
+          foil={detailFoil}
           dimmed={!detailOwned}
           onClose={() => setDetailLine(null)}
           onToggleOwned={(next) => {
             setOwned(detailLine.collectorNumber, next);
           }}
-        />
-      ) : null}
-    </div>
-  );
-}
-
-/** Miniatura lista: stesso scurimento delle mancanti della griglia. */
-function ListRowThumb({
-  imageUrl,
-  owned,
-}: {
-  imageUrl: string | null;
-  owned: boolean;
-}) {
-  const [broken, setBroken] = useState(false);
-  useEffect(() => {
-    setBroken(false);
-  }, [imageUrl]);
-
-  const showArt = Boolean(imageUrl && !broken);
-
-  return (
-    <div
-      className="relative aspect-[63/88] w-9 shrink-0 overflow-hidden rounded border border-border/60 bg-[linear-gradient(160deg,rgb(22_26_36)_0%,rgb(12_14_22)_100%)]"
-      aria-hidden
-    >
-      {showArt ? (
-        <img
-          src={imageUrl!}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover"
-          onError={() => setBroken(true)}
-        />
-      ) : (
-        <div className="absolute inset-0 opacity-[0.06] [background-image:repeating-linear-gradient(-14deg,rgb(255_255_255)_0_1px,transparent_1px_12px)]" />
-      )}
-      {!owned ? (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundColor: `rgb(0 0 0 / ${CARD_DIMMED_OVERLAY_OPACITY})`,
+          onToggleFoil={(next) => {
+            setFoil(detailLine.collectorNumber, next);
           }}
-          aria-hidden
         />
       ) : null}
     </div>
@@ -710,30 +995,53 @@ function StatCard({
   label,
   value,
   accent,
+  foil,
 }: {
   label: string;
   value: number;
   accent?: boolean;
+  foil?: boolean;
 }) {
-  return (
-    <div
-      className={[
-        "rounded-xl border px-4 py-3",
-        accent
-          ? "border-accent/25 bg-accent/[0.06]"
-          : "border-border bg-surface-1/50",
-      ].join(" ")}
-    >
+  const body = (
+    <>
       <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
       <p
         className={[
           "mt-1 font-mono text-2xl font-semibold tabular-nums tracking-tight",
-          accent ? "text-accent" : "text-fg",
+          foil
+            ? "text-gradient-foil"
+            : accent
+              ? "text-gradient-accent-card"
+              : "text-fg",
         ].join(" ")}
       >
         {value}
       </p>
-    </div>
+    </>
+  );
+
+  if (foil) {
+    return (
+      <div className="bg-foil-card-shell">
+        <div className="rounded-[calc(0.75rem-1px)] bg-surface-1/95 px-4 py-3">
+          {body}
+        </div>
+      </div>
+    );
+  }
+
+  if (accent) {
+    return (
+      <div className="bg-accent-card-shell">
+        <div className="rounded-[calc(0.75rem-1px)] bg-surface-1/95 px-4 py-3">
+          {body}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-surface-1/50 px-4 py-3">{body}</div>
   );
 }
 
@@ -894,21 +1202,41 @@ function CardHoverPreview({
 function CardDetailModal({
   line,
   imageUrl,
+  faceImages,
   owned,
+  foil,
   dimmed,
   onClose,
   onToggleOwned,
+  onToggleFoil,
 }: {
   line: ChecklistLine;
   imageUrl: string | null;
+  faceImages: CardFaceImageUrls[];
   owned: boolean;
+  foil: boolean;
   dimmed?: boolean;
   onClose: () => void;
   onToggleOwned: (owned: boolean) => void;
+  onToggleFoil: (foil: boolean) => void;
 }) {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const trapRef = useRef<HTMLDivElement>(null);
+  const [faceIndex, setFaceIndex] = useState(0);
   useFocusTrap(true, trapRef);
+
+  const faces =
+    faceImages.length > 0
+      ? faceImages
+      : imageUrl
+        ? [{ label: line.name, grid: null as string | null, large: imageUrl }]
+        : [];
+  const displayUrl = faces[faceIndex]?.large ?? imageUrl;
+  const multifaced = faces.length > 1;
+
+  useEffect(() => {
+    setFaceIndex(0);
+  }, [line.collectorNumber, line.name]);
 
   useEffect(() => {
     closeBtnRef.current?.focus();
@@ -916,11 +1244,54 @@ function CardDetailModal({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const rawTarget = e.target;
+      if (rawTarget instanceof HTMLTextAreaElement) return;
+      if (rawTarget instanceof HTMLInputElement) {
+        const textLike = new Set([
+          "text",
+          "search",
+          "url",
+          "email",
+          "password",
+          "number",
+          "tel",
+        ]);
+        if (textLike.has(rawTarget.type)) return;
+      }
+
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === "c") {
+        e.preventDefault();
+        onToggleOwned(!owned);
+        return;
+      }
+      if (key === "f") {
+        e.preventDefault();
+        onToggleFoil(!foil);
+        return;
+      }
+      if (key === "t" && multifaced && faces.length > 1) {
+        e.preventDefault();
+        setFaceIndex((i) => (i + 1) % faces.length);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [
+    faces.length,
+    foil,
+    multifaced,
+    onClose,
+    onToggleFoil,
+    onToggleOwned,
+    owned,
+  ]);
 
   return createPortal(
     <div
@@ -935,18 +1306,32 @@ function CardDetailModal({
         className="animate-modal-panel relative w-full max-w-[min(100%,20rem)] motion-reduce:animate-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          ref={closeBtnRef}
-          type="button"
-          onClick={onClose}
-          className="absolute -right-1 -top-10 inline-flex items-center gap-1 rounded-md border border-white/10 bg-surface-2/90 px-2.5 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
-        >
-          <X className="h-3.5 w-3.5" aria-hidden />
-          Chiudi
-        </button>
+        <div className="absolute -right-1 -top-10 flex items-center gap-1.5">
+          {multifaced ? (
+            <button
+              type="button"
+              onClick={() => setFaceIndex((i) => (i + 1) % faces.length)}
+              className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-surface-2/90 px-2.5 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
+              aria-label={`Altra faccia: ${faces[(faceIndex + 1) % faces.length]?.label ?? ""}`}
+              title="Altra faccia"
+            >
+              <FlipHorizontal className="h-3.5 w-3.5" aria-hidden />
+              Altra faccia
+            </button>
+          ) : null}
+          <button
+            ref={closeBtnRef}
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-surface-2/90 px-2.5 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden />
+            Chiudi
+          </button>
+        </div>
         <div className="overflow-visible bg-transparent">
           <div className="shadow-card-float aspect-[63/88] w-full overflow-hidden rounded-[3.5%]">
-            <CardFace line={line} imageUrl={imageUrl} dimmed={dimmed} className="h-full" />
+            <CardFace line={line} imageUrl={displayUrl} dimmed={dimmed} className="h-full" />
           </div>
           <div className="mt-4 rounded-lg bg-[rgb(6_8_14)] px-3 py-3">
             <h2
@@ -966,6 +1351,15 @@ function CardDetailModal({
                 className="h-4 w-4 rounded border border-border-strong bg-surface-2 outline-none ring-0 accent-accent focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(6_8_14)]"
               />
               <span className="text-sm text-fg/90">In collezione</span>
+            </label>
+            <label className="mt-2 flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={foil}
+                onChange={(e) => onToggleFoil(e.target.checked)}
+                className="h-4 w-4 rounded border border-border-strong bg-surface-2 outline-none ring-0 accent-accent focus:ring-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(6_8_14)]"
+              />
+              <span className="text-sm text-fg/90">Foil</span>
             </label>
           </div>
         </div>

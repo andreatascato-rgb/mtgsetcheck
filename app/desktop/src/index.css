@@ -25,6 +25,24 @@
   --color-mana-g: #2d8f56;
 
   /*
+   * Foil (UI): iridescenza “carta olografica”, versione soft per dark.
+   * Ciano → lavanda → rosa antico → ritorno ciano; abbastanza saturi da leggere su track surface-2.
+   */
+  --foil-fill-stop-a: #4a8294;
+  --foil-fill-stop-b: #6669a8;
+  --foil-fill-stop-c: #9a6278;
+  --foil-fill-stop-d: #3d7788;
+
+  /*
+   * StatCard “Possedute”: stesso linguaggio della card Foil (bordo + numero a gradiente).
+   * Oro caldo in 4 stop da --color-accent / --color-accent-hover.
+   */
+  --accent-card-stop-a: #7a5f18;
+  --accent-card-stop-b: #c9a227;
+  --accent-card-stop-c: #e4c04f;
+  --accent-card-stop-d: #a67f1c;
+
+  /*
    * Layout shell — scala base 4px, nomi semantici.
    * Preferire questi token in nuovi schermi invece di valori arbitrari (p-5, p-7…).
    */
@@ -208,5 +226,89 @@
     box-shadow:
       0 2px 5px rgb(0 0 0 / 0.16),
       0 10px 28px rgb(0 0 0 / 0.1);
+  }
+
+  /** Track barre Completamento / Foil — incassato, coerente tra loro. */
+  .app-progress-track {
+    border: 1px solid rgb(255 255 255 / 0.06);
+    background-color: var(--color-surface-2);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.35);
+  }
+
+  /** Riempimento barra Completamento — stessi stop della card Possedute. */
+  .bg-accent-progress-fill {
+    background-image: linear-gradient(
+      102deg,
+      var(--accent-card-stop-a) 0%,
+      var(--accent-card-stop-b) 30%,
+      var(--accent-card-stop-c) 62%,
+      var(--accent-card-stop-d) 100%
+    );
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.22);
+  }
+
+  /** Riempimento barra Foil (token --foil-fill-stop-*). */
+  .bg-foil-progress-fill {
+    background-image: linear-gradient(
+      102deg,
+      var(--foil-fill-stop-a) 0%,
+      var(--foil-fill-stop-b) 30%,
+      var(--foil-fill-stop-c) 62%,
+      var(--foil-fill-stop-d) 100%
+    );
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.2);
+  }
+
+  /** Bordo lamina per StatCard Foil (wrapper + stessi stop della barra). */
+  .bg-foil-card-shell {
+    border-radius: 0.75rem;
+    padding: 1px;
+    background-image: linear-gradient(
+      102deg,
+      var(--foil-fill-stop-a) 0%,
+      var(--foil-fill-stop-b) 30%,
+      var(--foil-fill-stop-c) 62%,
+      var(--foil-fill-stop-d) 100%
+    );
+  }
+
+  /** Valore numerico card Foil: gradiente fill, senza inset. */
+  .text-gradient-foil {
+    background-image: linear-gradient(
+      102deg,
+      var(--foil-fill-stop-a) 0%,
+      var(--foil-fill-stop-b) 30%,
+      var(--foil-fill-stop-c) 62%,
+      var(--foil-fill-stop-d) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /** Bordo lamina oro — accoppiato a card Foil (stesso raggio / padding). */
+  .bg-accent-card-shell {
+    border-radius: 0.75rem;
+    padding: 1px;
+    background-image: linear-gradient(
+      102deg,
+      var(--accent-card-stop-a) 0%,
+      var(--accent-card-stop-b) 30%,
+      var(--accent-card-stop-c) 62%,
+      var(--accent-card-stop-d) 100%
+    );
+  }
+
+  .text-gradient-accent-card {
+    background-image: linear-gradient(
+      102deg,
+      var(--accent-card-stop-a) 0%,
+      var(--accent-card-stop-b) 32%,
+      var(--accent-card-stop-c) 58%,
+      var(--accent-card-stop-d) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 }

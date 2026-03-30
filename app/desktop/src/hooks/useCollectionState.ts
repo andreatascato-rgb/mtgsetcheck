@@ -8,15 +8,19 @@ import {
 } from "../data/parseChecklistText";
 
 const STORAGE_PREFIX = "mtgsetcheck.v1.collection";
+const FOIL_STORAGE_PREFIX = "mtgsetcheck.v1.collection.foil";
 
 function storageKey(setId: string): string {
   return `${STORAGE_PREFIX}.${setId}`;
 }
 
-function loadStored(setId: string): Record<string, boolean> | null {
+function foilStorageKey(setId: string): string {
+  return `${FOIL_STORAGE_PREFIX}.${setId}`;
+}
+
+function parseBooleanRecord(raw: string | null): Record<string, boolean> | null {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(storageKey(setId));
-    if (!raw) return null;
     const parsed = JSON.parse(raw) as Record<string, boolean>;
     const out: Record<string, boolean> = {};
     for (const [k, v] of Object.entries(parsed)) {
@@ -24,6 +28,24 @@ function loadStored(setId: string): Record<string, boolean> | null {
       out[k] = v;
     }
     return out;
+  } catch {
+    return null;
+  }
+}
+
+function loadStored(setId: string): Record<string, boolean> | null {
+  try {
+    const raw = localStorage.getItem(storageKey(setId));
+    return parseBooleanRecord(raw);
+  } catch {
+    return null;
+  }
+}
+
+function loadFoilStored(setId: string): Record<string, boolean> | null {
+  try {
+    const raw = localStorage.getItem(foilStorageKey(setId));
+    return parseBooleanRecord(raw);
   } catch {
     return null;
   }
@@ -37,6 +59,18 @@ function mergeWithFile(
   for (const l of lines) {
     const n = l.collectorNumber;
     out[n] = stored && n in stored ? stored[n]! : l.ownedByDefault;
+  }
+  return out;
+}
+
+function mergeFoilWithFile(
+  lines: readonly ChecklistLine[],
+  stored: Record<string, boolean> | null,
+): Record<string, boolean> {
+  const out: Record<string, boolean> = {};
+  for (const l of lines) {
+    const n = l.collectorNumber;
+    out[n] = stored && n in stored ? stored[n]! : false;
   }
   return out;
 }
@@ -56,15 +90,32 @@ export function useCollectionState(
   const [ownedByNumber, setOwnedByNumber] = useState<Record<string, boolean>>(() =>
     mergeWithFile(lines, loadStored(setId)),
   );
+  const [foilByNumber, setFoilByNumber] = useState<Record<string, boolean>>(() =>
+    mergeFoilWithFile(lines, loadFoilStored(setId)),
+  );
 
   useEffect(() => {
     setOwnedByNumber(mergeWithFile(lines, loadStored(setId)));
+    setFoilByNumber(mergeFoilWithFile(lines, loadFoilStored(setId)));
   }, [setId, lines]);
 
   const persist = useCallback(
     (next: Record<string, boolean>) => {
       try {
         localStorage.setItem(storageKey(setId), JSON.stringify(next));
+        return true;
+      } catch {
+        onPersistErrorRef.current?.(STORAGE_SAVE_FAILED_IT);
+        return false;
+      }
+    },
+    [setId],
+  );
+
+  const persistFoil = useCallback(
+    (next: Record<string, boolean>) => {
+      try {
+        localStorage.setItem(foilStorageKey(setId), JSON.stringify(next));
         return true;
       } catch {
         onPersistErrorRef.current?.(STORAGE_SAVE_FAILED_IT);
@@ -85,23 +136,41 @@ export function useCollectionState(
     [persist],
   );
 
+  const setFoil = useCallback(
+    (collectorNumber: string, foil: boolean) => {
+      setFoilByNumber((prev) => {
+        const next = { ...prev, [collectorNumber]: foil };
+        if (!persistFoil(next)) return prev;
+        return next;
+      });
+    },
+    [persistFoil],
+  );
+
   const counts = useMemo(() => {
     let owned = 0;
     let missing = 0;
+    let foil = 0;
     for (const l of lines) {
       if (ownedByNumber[l.collectorNumber]) owned += 1;
       else missing += 1;
+      if (foilByNumber[l.collectorNumber]) foil += 1;
     }
     return {
       total: lines.length,
       owned,
       missing,
+      foil,
     };
-  }, [lines, ownedByNumber]);
+  }, [lines, ownedByNumber, foilByNumber]);
 
   const exportJson = useCallback(() => {
-    return JSON.stringify({ v: 1 as const, setId, owned: ownedByNumber }, null, 2);
-  }, [setId, ownedByNumber]);
+    return JSON.stringify(
+      { v: 1 as const, setId, owned: ownedByNumber, foil: foilByNumber },
+      null,
+      2,
+    );
+  }, [setId, ownedByNumber, foilByNumber]);
 
   const importFromJson = useCallback(
     (json: string): { ok: true } | { ok: false; error: string } => {
@@ -138,13 +207,32 @@ export function useCollectionState(
         const n = l.collectorNumber;
         next[n] = n in incoming ? incoming[n]! : l.ownedByDefault;
       }
+
+      const foilRaw = o.foil;
+      const incomingFoil: Record<string, boolean> = {};
+      if (foilRaw && typeof foilRaw === "object") {
+        for (const [k, v] of Object.entries(foilRaw as Record<string, unknown>)) {
+          if (typeof v !== "boolean") continue;
+          incomingFoil[k] = v;
+        }
+      }
+      const nextFoil: Record<string, boolean> = {};
+      for (const l of lines) {
+        const n = l.collectorNumber;
+        nextFoil[n] = n in incomingFoil ? incomingFoil[n]! : false;
+      }
+
       if (!persist(next)) {
         return { ok: false, error: STORAGE_SAVE_FAILED_IT };
       }
+      if (!persistFoil(nextFoil)) {
+        return { ok: false, error: STORAGE_SAVE_FAILED_IT };
+      }
       setOwnedByNumber(next);
+      setFoilByNumber(nextFoil);
       return { ok: true };
     },
-    [setId, lines, persist],
+    [setId, lines, persist, persistFoil],
   );
 
   const exportChecklistText = useCallback(() => {
@@ -174,6 +262,8 @@ export function useCollectionState(
   return {
     ownedByNumber,
     setOwned,
+    foilByNumber,
+    setFoil,
     counts,
     exportJson,
     importFromJson,

@@ -43,7 +43,7 @@ function load(): UserSetEntry[] {
             collectorNumber: unknown;
             name: unknown;
             ownedByDefault: unknown;
-            colorIdentity?: unknown;
+            manaColors?: unknown;
           };
           const base = {
             collectorNumber: String(row.collectorNumber),
@@ -51,10 +51,10 @@ function load(): UserSetEntry[] {
             ownedByDefault: Boolean(row.ownedByDefault),
           };
           if (
-            Array.isArray(row.colorIdentity) &&
-            row.colorIdentity.every((x) => typeof x === "string")
+            Array.isArray(row.manaColors) &&
+            row.manaColors.every((x) => typeof x === "string")
           ) {
-            return { ...base, colorIdentity: row.colorIdentity as string[] };
+            return { ...base, manaColors: row.manaColors as string[] };
           }
           return base;
         }),

@@ -21,6 +21,16 @@ Articoli e guide usati come spunto per sintetizzare `best-practice/`. Non sono e
 
 - [WCAG 2.2 Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/) — W3C WAI  
 
+## Tabelle dati (HTML, ARIA, virtualizzazione)
+
+- [H51 / H39 / H63 — Tecniche WCAG 2.2 (tabelle)](https://www.w3.org/WAI/WCAG22/Techniques/#html) — W3C  
+- [WebAIM — Accessible Data Tables](https://webaim.org/techniques/tables/data/)  
+- [WAI-ARIA — Grid and Table Properties](https://www.w3.org/WAI/ARIA/apg/practices/grid-and-table-properties/)  
+- [TanStack Table — Virtualization](https://tanstack.com/table/latest/docs/guide/virtualization)  
+- [NN/g — Data Tables: Four Major User Tasks](https://www.nngroup.com/articles/data-tables)  
+
+Sintesi operativa interna: [09-data-tables.md](./09-data-tables.md).
+
 ## Guide generali UI/UX (etichetta “2026” su siti terzi)
 
 - [UI/UX Design Guide 2026: Framework for Product Teams](https://cracked.ai/guide/general/ui-ux-design-guide) — Cracked.ai  

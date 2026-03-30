@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import type { ChecklistLine } from "../data/checklistTypes";
 import {
   fetchAllCardsForSet,
+  getCardFaceImageUrls,
   getCardImageUrls,
   resolveScryfallCard,
+  type CardFaceImageUrls,
   type ScryfallCard,
 } from "../data/scryfallApi";
 
@@ -49,6 +51,7 @@ export function useScryfallSetImages(
   loading: boolean;
   error: string | null;
   getImages: (line: ChecklistLine) => ResolvedCardImages;
+  getFaceImages: (line: ChecklistLine) => CardFaceImageUrls[];
   resolveCard: (line: ChecklistLine) => ScryfallCard | undefined;
 } {
   const [loading, setLoading] = useState(() => {
@@ -125,5 +128,14 @@ export function useScryfallSetImages(
     [scryfallSetCode, lines, version],
   );
 
-  return { loading, error, getImages, resolveCard };
+  const getFaceImages = useCallback(
+    (line: ChecklistLine): CardFaceImageUrls[] => {
+      const card = resolveCard(line);
+      if (!card) return [];
+      return getCardFaceImageUrls(card);
+    },
+    [resolveCard],
+  );
+
+  return { loading, error, getImages, getFaceImages, resolveCard };
 }

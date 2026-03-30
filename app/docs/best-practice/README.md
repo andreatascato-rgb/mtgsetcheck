@@ -15,10 +15,12 @@ Non sostituisce il lavoro visivo (Figma, ecc.): serve da **checklist** quando im
 | [06-fonti.md](./06-fonti.md) | Link alle fonti esterne (articoli, guide) |
 | [07-typography-stack.md](./07-typography-stack.md) | Font scelti per questa app (Jakarta, Fraunces, JetBrains Mono) |
 | [08-github-workflow.md](./08-github-workflow.md) | Branch, PR, CI locale, tag/release, commit (riferimento) |
+| [09-data-tables.md](./09-data-tables.md) | Tabelle dati: design (tipografia, densità, stati), HTML/WCAG, ARIA, virtualizzazione, TanStack, responsive, test |
+| [10-palette-accents-cards.md](./10-palette-accents-cards.md) | Palette dark, accenti, superfici e card: audit token, contesto app, proposte di raffinamento (fuori shell / gabbia contenuto) |
 
 ## Rapporto con `decisions/`
 
 - **`docs/decisions/`**: *cosa* abbiamo scelto per questo progetto.
 - **`docs/best-practice/`**: *come* il settore tende a lavorare bene nel 2025–2026; utile per review e per non reinventare pattern sbagliati.
 
-Ultimo aggiornamento sintesi: **2026-03-25**.
+Ultimo aggiornamento sintesi: **2026-03-30** (aggiunto `10-palette-accents-cards.md`).

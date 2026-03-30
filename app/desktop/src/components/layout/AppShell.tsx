@@ -153,7 +153,7 @@ export function AppShell({ onStorageError }: AppShellProps) {
                   {sidebarSets.map((s) => {
                     const active = s.id === activeSetId;
                     return (
-                      <li key={s.id} className="group flex gap-1">
+                      <li key={s.id} className="group flex items-center gap-1">
                         <button
                           type="button"
                           aria-current={active ? "true" : undefined}
@@ -200,7 +200,7 @@ export function AppShell({ onStorageError }: AppShellProps) {
                               }
                             }
                           }}
-                          className="mt-2 inline-flex shrink-0 items-center justify-center self-start rounded-md border border-white/[0.08] bg-surface-2/80 px-2 py-1.5 text-muted opacity-100 transition-[opacity,background-color,color,border-color] hover:border-amber-400/40 hover:bg-amber-500/10 hover:text-amber-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                          className="inline-flex shrink-0 items-center justify-center rounded-md border border-white/[0.08] bg-surface-2/80 px-2 py-1.5 text-muted opacity-100 transition-[opacity,background-color,color,border-color] hover:border-amber-400/40 hover:bg-amber-500/10 hover:text-amber-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                           aria-label={`Rimuovi set ${s.label}`}
                           title="Rimuovi set"
                         >

@@ -6,8 +6,9 @@ export type ChecklistLine = {
   /** Stato iniziale dal file sorgente ([x] / [ ]). */
   ownedByDefault: boolean;
   /**
-   * `color_identity` Scryfall (solo W,U,B,R,G). `[]` = incolore.
-   * Assente se la riga viene solo da import testo senza refresh Scryfall.
+   * Colori per filtro UI, derivati da Scryfall (`manaColorsFromScryfallCard`).
+   * `[]` = incolore noto; assente = riga solo da testo / mai sincronizzata — il filtro colore la esclude.
+   * Policy: `app/docs/decisions/04-data.md`.
    */
-  colorIdentity?: readonly string[];
+  manaColors?: readonly string[];
 };

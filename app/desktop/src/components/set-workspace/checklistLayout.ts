@@ -24,5 +24,41 @@ export function getChecklistGridRowHeightPx(containerWidth: number, columnCount:
   return cardW * CARD_ASPECT + GAP_PX;
 }
 
-/** Altezza riga vista lista (miniatura + padding). */
-export const CHECKLIST_LIST_ROW_HEIGHT_PX = 60;
+/* --- Vista tabella checklist: larghezze e padding coerenti con `SetWorkspace` --- */
+
+/**
+ * Larghezza unica per tutte le colonne “fisse” (anteprima, N°, Foil, Posseduta).
+ * Stesso valore = griglia visiva allineata.
+ */
+export const CHECKLIST_TABLE_FIXED_COL_WIDTH_CLASS =
+  "w-[4.75rem] min-w-[4.75rem] max-w-[4.75rem] shrink-0";
+
+/** Colonna 1 — miniatura (stessa larghezza delle altre colonne strette). */
+export const CHECKLIST_TABLE_ART_COL_CLASS = CHECKLIST_TABLE_FIXED_COL_WIDTH_CLASS;
+
+/**
+ * Larghezza effettiva della miniatura carta (più stretta della colonna, centrata).
+ */
+export const CHECKLIST_TABLE_ART_THUMB_WRAP_CLASS = "w-9 shrink-0 sm:w-10";
+
+/** Colonna N° — stessa base larghezza + monospace. */
+export const CHECKLIST_TABLE_NUM_COL_CLASS = `${CHECKLIST_TABLE_FIXED_COL_WIDTH_CLASS} font-mono tabular-nums`;
+
+/** Colonna Foil — stessa base larghezza + monospace. */
+export const CHECKLIST_TABLE_FOIL_COL_CLASS = `${CHECKLIST_TABLE_FIXED_COL_WIDTH_CLASS} font-mono tabular-nums`;
+
+/** Colonna Posseduta (checkbox) — stessa larghezza delle altre strette. */
+export const CHECKLIST_TABLE_OWNED_COL_CLASS = CHECKLIST_TABLE_FIXED_COL_WIDTH_CLASS;
+
+/**
+ * Colonna nome: occupa il resto (`flex-1`), minimo leggibile.
+ */
+export const CHECKLIST_TABLE_NAME_COL_CLASS =
+  "min-h-0 min-w-[12rem] flex-1 basis-0";
+
+/**
+ * Inset orizzontale della tabella rispetto all’area scroll (`pl` + `pr`).
+ * Stesso valore usato nella griglia (`p-2` / `sm:p-3`); qui solo i lati orizzontali.
+ * Applicare alla riga, non alle singole celle, così le larghezze fisse restano coerenti.
+ */
+export const CHECKLIST_TABLE_ROW_EDGE_INSET = "pl-2 sm:pl-3 pr-2 sm:pr-3";
